@@ -1,0 +1,131 @@
+********************************************************* 
+AVA: cursos.alura.com.br
+Formação: Angular
+Curso: Angular parte 4: Lapidando o Projeto
+Data Início: 08/02/2021
+*********************************************************
+ 
+Capítulo 01: Alteração do title
+#routingModules, #events, #route, #activetedRoute, #router, #routeData, #pipe, #filter, #map, #switchMap 
+
+1. Acrescentamos em cada uma das rotas da aplicação  que levam a componentes de página, incluindo rotas "filhas",
+   uma propridade com um objeto "data" com uma propridade "title". Essa definição de objeto "data" é da própria 
+   definição de rota do Angular, na qual posso colocar qualquer outra propridade/valor:
+          @see src\app\app.routing.module.ts
+          @see src\app\home\home.routing.module.ts
+2. No componente principal da aplicação app.component, injetamos 3 objetos injetáveis, e, como manda a boa prática,
+   para processarmos informações ao criar o componente, implementamos a interface "OnInit":
+          @see src\app\app.component.ts
+   a qual vai extrair o a propridade "title" configurada em data de cada uma das rotas da aplicação;
+
+Capítulo 02: Upload e progresso
+#httpClient, #httpClientPostOptions, #HttpEvent, #HttpEventType, #finalizeOperator 
+
+1. Alteramos o método upload do serviço: 
+          @see src\app\photos\photo\photo.service.ts
+   ...acrecentado um "objeto de opções" extrar no seu observável "post";
+2. Alteraos o método upload do componente photo-form:
+          @see src\app\photos\photo-form\photo-form.component.ts
+   ...acrecentado um parametro "event" no callback "sucesso" da inscrição do observável,
+   e condicionando o evento que é passado;
+3. Fizemos um ngIf / else no template do componente photo-form para condicionar o progresso de envio da foto:
+          @see src\app\photos\photo-form\photo-form.component.html
+
+Capítulo 03: Indicador de trabalho
+#component, #service, #subject, #interceptor, #pipeAssync, #ngClass, #providers  
+
+1. Criamos o componente, o seu serviço e seu módulo:
+         @see src\app\shared\components\loading
+   O "interceptor" irá "ouvir" as requisições do navegador e modificar o estado do componente usando para tal 
+   o "subject" do serviço deste componente;
+2. Importamos o módulo do loading.component no 
+         @see src\app\core\core.module.ts
+   Já que este módulo contém as declarations do "header.component", o qual irá utilizar o componente 
+   que acabamos de criar (loading.component);
+3. Usamos o componente no template:
+         @see src\app\core\header\header.component.html
+4. Do jeito que está, funcionaria se, em cada componente que faz requisição de carregamento, injetarmos o serviço 
+   do componente "Loading", e trabalharmos com seus handlers de ciclo de vida, poderíamos fazer o start / stop do
+   efeito de carregamento. Entretanto, seria "espalhar" toda essa burocracia para todos os componentes. Existe 
+   uma forma melhor de trabalhar com requisição: usar "Interceptors". Então, criamos um "Interceptor" exclusivo 
+   em:
+         @see src\app\shared\components\loading\loading.interceptor.ts
+   ...que por sua vez, faz o uso do serviço do componente "loading", chamando o start / stop de acordo com a 
+   requisição ser de Resposta (stop), ou não (start);
+5. Adicionando um "provider" de Intereceptação de Requisição HTTP ao módulo:
+         @see src\app\shared\components\loading\loading.module.ts
+   Isso ativa o Interceptador para todos os Componentes pertencentes a este módulo, e a todos os módulos que 
+   carregam o LoadingModule (o @see src\app\core\core.module.ts carrega o LoadingModule);
+
+Capítulo 04: Menu da aplicação
+#ngClassCondition, #tabindex, #keyup, #keyup.space, #overlay,  
+
+1. Criamos o componente Menu e seu módulo exportador:
+         @see src\app\shared\components\menu
+2. Importamos o módulo do componente "Menu" no "core.module", pois é o componente "header" que irá utilizá-lo:
+         @see src\app\core\core.module.ts
+3. No template do componente "header", por sua vez, inserimos o novo componente:
+         @see src\app\core\header\header.component.html
+4. Inserimos o layout e o CSS do componente de menu em:
+         @see src\app\shared\components\menu\menu.component.html
+         @see src\app\shared\components\menu\menu.component.scss
+5. Para termos acesso a diretiva de "ShowIfLogged", precisamos carregar o módulo desta diretiva no "core.module",
+   e, usando essa diretiva, definimos o nosso primeiro item de menu no template do header.component:
+         @see src\app\core\header\header.component.html
+6. Modificamos a diretiva para responder ao componente anexado o estado do login/logout do usuário:
+         @see src\app\shared\directives\show-if-logged\show-if-logged.directive.ts
+
+Capítulo 05: Global error handler e log do server side
+#errorHandler, #backendLogging, #methodInjection, 
+
+1. Criamos uma classe que implementa a interface ErrorHandler:
+         @see src\app\errors\global-error-handler\global-error-handler.ts
+   Declarando-a em "providers" em:
+         @see src\app\errors\errors.module.ts
+   "errors.module", por sua vez, é carregado no módulo principal da aplicação, o que faz com quem nossa classe
+   seja provida para toda a "App";
+2. Precisamos padronizar os erros para todos os navegadores. Para isso, vamos instalar a lib stacktrace-js:
+         > npm install stacktrace-js --save
+   ...e os @types para o VSCode para termos os auto-complete:
+         > npm install @types/stacktrace-js --save-dev
+3. Importamos essa lib no nosso global-error-handler, com a qual podemos acessar a pilha de execução que 
+   levou ao erro:
+         @see src\app\errors\global-error-handler\global-error-handler.ts
+4. Criamos o serviço:
+         @see src\app\errors\global-error-handler\server-log.service.ts
+   ...que acessa o serviço remoto de registro de log, atualizando a propriedade de ambiente "environment"
+   para ser sensível a servidor de produção e desenvolvimento;
+   Usamos o serviço, injetando-o via mecanismo de "injeção em método", e o utilizamos no global-error-handler;
+5. Criamos um componente de global-error:
+         @see src\app\errors\global-error
+   Importando seu módulo para o errors.module. 
+   Como é um componente de escopo de página, precisa ter uma rota pra ele em:
+         @see src\app\app.routing.module.ts
+   E, usando o redirecionamento do router, redirecionamos para página de erro, quando em ambiente de produção:
+         @see src\app\errors\global-error-handler\global-error-handler.ts
+
+Capítulo 06: Um pouco mais sobre validação
+#ngForm, #formSubmitted, #formBuilderFormControlTouched, #validatorFn, #formBuilderGroupOptions
+
+1. Melhoramos a UX do formulário signup da aplicação:
+         @see src\app\home\signup\signup.component.html
+   Uma das novidades é o uso da variável de template "#form" que guarda como valor uma referencia para "ngForm",
+   proporcionando acesso aos métodos e estados do formulário;
+2. Usamos o método do "formControl" "touched" para verificar se o campo foi "tocado";
+3. Criamos uma validação, não de campo, mas que envolve vários "controls" do mesmo "formGroup":
+         @see src\app\home\signup\username-password.validator.ts
+
+Capítulo 07: Um pouco mais sobre navegação e rotas
+#replaceUrl, #loginRedirectTo-FromUrl #queryParams, #navigateByUrl
+
+1. Modificamos o método remove() do componente:
+         @see src\app\photos\photo-details\photo-details.component.ts
+   ...para excluir a URL "anterior" do histórico;
+2. Modificamos o método canActivate() da guarda: 
+         @see src\app\core\auth\auth.guard.ts
+   ...para incluir na URL de redirecionamento o "queryParams" "fromUrl". Dessa forma, passamos o estado da URL que
+   o usuário tentou acessar, mas, foi redirecionado pela condição de guarda que o obrigou a logar.
+   Mas, para salvar o fromUrl, precisamos modificar o comportamento do método login() em:
+         @see src\app\home\signin\signin.component.ts
+   ...no qual, ao invés dele redirecionar para a tela "timeline" do usuário, ele verifica se existe uma "fromUrl"
+   e direciona para esta;

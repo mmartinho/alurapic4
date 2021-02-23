@@ -1,0 +1,25 @@
+<!-- 
+    ngClass rederiza uma class que pode ser
+    "active-menu" ou vazia 
+-->
+<div [ngClass]="{ 'active-menu' : isShown }">
+    <div class="menu-bar">
+        <!-- Ícone do "x", se for clicado: toggle() -->
+        <i class="fa fa-window-close" 
+           tabindex="0"
+           (keyup.space)="toggle()"
+           (click)="toggle()">
+        </i>
+       
+        <!-- 
+            Tudo que estiver "inner" na definição 
+            do componente vai ser posicionado aqui: 
+        -->
+        <ng-content></ng-content>
+    </div>
+    <!-- 
+        Plano abaixo do "menu-bar" que cobre tudo o que não 
+        é menu. Se for clicado: toggle() 
+    -->
+    <div class="overlay" (click)="toggle()"></div>
+</div>

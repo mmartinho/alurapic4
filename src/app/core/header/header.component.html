@@ -1,0 +1,51 @@
+<!-- Cabeaçalho que fixo no alto da página -->
+<header class="fixed-top">
+    <nav class="navbar navbar-light bg-white">
+        <!-- Título da App e ícone esconde/mostra menu -->
+        <a class="navbar-brand">
+            <i class="fa fa-bars mr-2" 
+               tabindex="0" 
+               (keyup.space)="menu.toggle()" 
+               (click)="menu.toggle()">
+            </i>
+            ALURAPIC
+        </a>
+
+        <!-- Componente de Menu -->
+        <ap-menu #menu>
+            <ul class="list-unstyled" (click)="menu.toggle()">
+                <li>
+                    <a [routerLink]="['']">Home</a>
+                </li>
+                <li showIfLogged>
+                    <a [routerLink]="['p','add']">Upload</a>
+                </li>
+            </ul>
+        </ap-menu>
+
+        <!-- Quando usuário está logado ou não -->
+        <div *ngIf="(user$ | async) as user; then thenBlock else elseBlock"></div>
+        <ng-template #thenBlock>
+            <span class="navbar-text">
+                <i class="fa fa-user-circle"></i>
+                <a (click)="logout()">
+                    <span class="ml-2">{{ user?.name }} (Logout)</span>
+                </a>           
+            </span>
+        </ng-template>
+        <ng-template #elseBlock>
+            <span class="navbar-text">
+                <a [routerLink]="['']">Please, login!</a>
+            </span>
+        </ng-template>
+    </nav>
+
+    <!-- Barra fixa no alto da página, abaixo da navbar -->
+    <div class="fixed-top">
+        <!-- Componente de "loading" -->
+        <ap-loading></ap-loading>
+        
+        <!-- Componente de "feedback" -->
+        <ap-alert></ap-alert>
+    </div>
+</header>

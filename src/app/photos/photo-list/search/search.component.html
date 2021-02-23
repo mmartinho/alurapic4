@@ -1,0 +1,21 @@
+<!-- 
+    Event binding (keyup): da "view" para o "componente"
+    Chama o handler onKeyUp()
+    @see src\app\photos\photo-list\search\search.component.ts
+
+    Property binding [value]: do "componente" para "view"
+    @see src\app\photos\photo-list\search\search.component.ts
+-->
+<div class="text-center mt-3 mb-3">
+    <form>
+        <i aria-hidden="true" class="fa fa-search mr-2"></i>
+        <input
+            class="rounded"
+            type="search"
+            placeholder="search..."
+            autofocus
+            (keyup)="onKeyUp($event.target)"
+            [value]="value"
+        >
+    </form>
+</div> 

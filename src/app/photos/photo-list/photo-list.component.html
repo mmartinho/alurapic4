@@ -1,0 +1,27 @@
+<h1>Photo-List</h1>
+<!--
+    Event binding CUSTOMIZADO (onTyping): da "view" para o "componente"
+    @see src\app\photos\photo-list\search\search.component.ts
+    
+    Property binding [value]: do "componente" (search) para "view" (photo-list)
+-->
+<ap-search (onTyping)="filter = $event" [value]="filter"></ap-search>
+
+<!--
+    Property biding [photos]: do "componente" para "view"
+    com um "pipe" filterByDescription
+    @see src\app\photos\photo-list\filter-by-description.pipe.ts
+-->
+<ap-photos [photos]="photos | filterByDescription: filter"></ap-photos>
+
+<!-- 
+    Property binding [hasMore]: do "componente" para "view"
+    Passa o valor de hasMore do componente para a "template"
+    do componente: 
+    @see src\app\photos\photo-list\load-buttom\load-button.component.html
+    
+    Event binding (click): da "view" para o "componente"
+    Chama o handler load()
+    @see src\app\photos\photo-list\photo-list.component.ts
+-->
+<ap-load-button (click)="load()" [hasMore]="hasMore"></ap-load-button>
